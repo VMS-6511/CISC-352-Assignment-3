@@ -47,7 +47,7 @@ class Vertex:
     def isRootNode(self):
         return self.rootNode
     def __str__(self):
-        string = "Value: " + str(self.value) + " Neighbours: [ " + str(self.neighbours)
+        string = "Value: " + str(self.value) + " Neighbours: " + str(self.neighbours)
         '''for x in self.neighbours:
             string = string+str(x)
 
@@ -57,52 +57,116 @@ class Vertex:
 
 
 
-def alpha_beta(current_node, alpha, beta,numLeafNodes):
-    #print current_node
-    if current_node.isRootNode():
+def alpha_beta(current_node, alpha, beta):
+
+    '''if current_node.isRootNode():
         current_node.alpha = -float('infinity')
         current_node.beta = float('infinity')
 
-    if current_node.isGoalNode() == True and current_node.getMinimaxValue() == "None":
-        print current_node.goalNode
+    if current_node.isGoalNode():
         numLeafNodes = numLeafNodes+1
-        print (current_node.getValue(),numLeafNodes)[0]
+        return (current_node.getValue(),numLeafNodes)
 
     elif current_node.getMinimaxValue() == "MAX":
+        values = []
         print current_node
-        current_node.alpha = max(current_node.alpha,(alpha_beta(current_node.neighbours[0],current_node.alpha,current_node.beta,numLeafNodes)[0]))
+        for vertex in current_node.neighbours:
+            values.append(alpha_beta(vertex,numLeafNodes)[0])
+            current_node.alpha = max(current_node.alpha,max(values))
         if current_node.alpha >= current_node.beta:
             return (current_node.alpha,numLeafNodes)
 
     elif current_node.getMinimaxValue() == "MIN":
-        #print alpha_beta(current_node.neighbours[0],current_node.alpha,current_node.beta,numLeafNodes)
-        #print current_node
-        current_node.beta = min(current_node.beta,(alpha_beta(current_node.neighbours[0],current_node.alpha,current_node.beta,numLeafNodes)[0]))
-
+        values = []
+        for vertex in current_node.neighbours:
+            values.append(alpha_beta(vertex,numLeafNodes)[0])
+            current_node.beta = min(current_node.beta,min(values))
         if current_node.beta <= current_node.alpha:
-            return (current_node.beta,numLeafNodes)
+            return (current_node.beta,numLeafNodes)'''
+    #print current_node
+
+    '''if current_node.isRootNode():
+        current_node.alpha = -float("infinity")
+        current_node.beta = float("infinity")
+
+    if current_node.isGoalNode():
+        #numLeafNodes=numLeafNodes+1
+        #print 1
+        return current_node.getValue()
+
+
+    elif current_node.getMinimaxValue() == "MAX":
+        values = []
+        for child in current_node.neighbours:
+            values.append(alpha_beta(child))
+            current_node.alpha = max(current_node.alpha,max(values))
+            print current_node
+            print current_node.alpha, current_node.beta
+            if(current_node.alpha >= current_node.beta):
+                return current_node.beta
+        return current_node.alpha
+
+    elif current_node.getMinimaxValue() == "MIN":
+        values = []
+        for child in current_node.neighbours:
+            values.append(alpha_beta(child))
+            current_node.beta = min(current_node.beta,min(values))
+            print current_node
+            print current_node.alpha, current_node.beta
+            if(current_node.beta<=current_node.alpha):
+                return current_node.alpha
+        return current_node.beta'''
+    #Working version of algorithm
+    if current_node.isRootNode():
+        alpha = -float("infinity")
+        beta = float("infinity")
+
+    if current_node.isGoalNode():
+        return current_node.getValue()
+
+
+    elif current_node.getMinimaxValue() == "MAX":
+        values = []
+        for child in current_node.neighbours:
+            values.append(alpha_beta(child,alpha,beta))
+            alpha = max(alpha,max(values))
+            current_node.alpha = max(alpha,max(values))
+            if(alpha >= beta):
+                return beta
+        return alpha
+
+    elif current_node.getMinimaxValue() == "MIN":
+        values = []
+        for child in current_node.neighbours:
+            values.append(alpha_beta(child,alpha,beta))
+            beta = min(beta,min(values))
+            current_node.beta = min(beta,min(values))
+            if(beta<=alpha):
+                return alpha
+        return beta
+
+
 
 def main():
-    vertex4D = Vertex('4','None',False)
-    vertex3D = Vertex('3','None',False)
+    vertex5D = Vertex('5','None',False)
+    vertex7D = Vertex('7','None',False)
+    vertex3D = Vertex('3', 'None', False)
     vertexD = Vertex('D','MAX',False)
-    vertexD.setNeighbours([vertex4D,vertex3D])
+    vertexD.setNeighbours([vertex5D,vertex7D,vertex3D])
 
     vertex2E = Vertex('2','None',False)
-    vertex7E = Vertex('7','None',False)
     vertexE = Vertex('E','MAX',False)
-    vertexE.setNeighbours([vertex2E,vertex7E])
+    vertexE.setNeighbours([vertex2E])
 
     vertexB = Vertex('B','MIN',False)
     vertexB.setNeighbours([vertexD,vertexE])
 
-    vertex3F = Vertex('3','None',False)
-    vertex2F = Vertex('2','None',False)
+    vertex8F = Vertex('8','None',False)
     vertexF = Vertex('F','MAX',False)
-    vertexF.setNeighbours([vertex3F,vertex2F])
+    vertexF.setNeighbours([vertex8F])
 
-    vertex2G = Vertex('2','None',False)
-    vertex8G = Vertex('8','None',False)
+    vertex2G = Vertex('4','None',False)
+    vertex8G = Vertex('3','None',False)
     vertexG = Vertex('G','MAX',False)
     vertexG.setNeighbours([vertex2G,vertex8G])
 
@@ -112,9 +176,9 @@ def main():
     vertexA = Vertex('A','MAX',True)
     vertexA.setNeighbours([vertexB,vertexC])
 
-    print(alpha_beta(vertexA,-float("infinity"),float("infinity"),0))
-
+    print(alpha_beta(vertexA,0,0))
 
 main()
+
 
 
