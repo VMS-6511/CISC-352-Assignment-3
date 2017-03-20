@@ -1,3 +1,7 @@
+"""
+CISC 352 - Assignment #3
+Program #3 - Alpha-Beta Pruning
+"""
 import math
 class Vertex:
 
@@ -55,8 +59,7 @@ class Vertex:
 
         return string
 
-
-
+    
 def alpha_beta(current_node, alpha, beta,numGoalNodes):
 
     if current_node.isRootNode():
@@ -90,45 +93,101 @@ def alpha_beta(current_node, alpha, beta,numGoalNodes):
                 return (alpha,numGoalNodes)
         return (beta,numGoalNodes)
 
+"""
+Given one line of input from 'alphabeta.txt'
+buildGraph() creates the graph using the vertex class
+return the node at the root of the graph
+"""
+def buildGraph(vSet):
+    #Splits input into sets of nodes and edges
+    vSet = vSet.split()
+    nodeSet = splitEdges(vSet[0])
+    edgeSet = splitEdges(vSet[1])
+
+    #Dictionary holds vertex's in form {'value' : VertexObject} 
+    vertexSet = {}
+    
+    #Create vertex for root node
+    vertexSet[nodeSet[0][0]] = Vertex(nodeSet[0][0], nodeSet[0][1], True)
+    rootVertex = vertexSet[nodeSet[0][0]]
+
+    #Create vertex's for all other non-leaf nodes
+    for node in nodeSet[1:]:
+        vertexSet[node[0]] = Vertex(node[0], node[1], False)
+
+    #Populate the neighbours array of each vertex
+    #Create vertex's for leaf nodes
+    for edge in edgeSet:
+        node1 = edge[0]
+        node2 = edge[1]
+        
+        if vertexSet.has_key(node2):
+            vertexSet[node1].neighbours.append(vertexSet[node2])
+        else:
+            vertexSet[node2] = Vertex(node2, 'None', False)
+            vertexSet[node1].neighbours.append(vertexSet[node2])
+    
+    return rootVertex
+
+"""
+Helper function for buildGraph()
+Converts node and edge sets from string form to array form
+"""
+def splitEdges(edgeSet):
+    edges = []
+    trimInput = edgeSet[1:]
+    start = 0
+    end = 0
+    
+    for i in range(0, len(trimInput)):
+        if trimInput[i] == "(":
+            first = "" #will hold first atom in clause
+            firstIndex = i + 1
+            while trimInput[firstIndex] != ",":
+                first += trimInput[firstIndex]
+                firstIndex += 1
+            secondIndex = firstIndex + 1
+            second = "" #holds second atom in clause
+            while trimInput[secondIndex] != ")":
+                second += trimInput[secondIndex]
+                secondIndex += 1
+            i = secondIndex #increment loop counter to start of next clause
+            edges.append((first, second))
+            
+    return edges
 
 
+#Appends the results of alphaBeta Pruning to output file
+def writeFile(fileName, stringOut):
+    fo = open(fileName, 'a')
+    fo.write(stringOut)
+    fo.write("\n")
+
+#Reads graphs from input file into array
+def readFile(fileName):
+    f = open(fileName, 'r')
+    content = f.readlines()
+    content = [x.strip() for x in content]
+    return content
+
+"""
+Performs alphaBeta Pruning on graphs from input file
+Writes results to output file
+"""
+def runProb3(fileIn, fileOut):
+    contentIn = readFile(fileIn)
+
+    graphNum = 1
+    for line in range(0, len(contentIn), 2):
+        graph = contentIn[line]
+        rootNode = buildGraph(graph)
+        solu = (alpha_beta(rootNode,0,0,0))
+        stringOut = ("Graph " + str(graphNum) + ": Score: " + str(solu[0]) +
+               "; Leaf Nodes Examined: " + str(solu[1]) + "\n")
+        graphNum += 1
+        writeFile(fileOut, stringOut)
+        
 def main():
-    vertex5D = Vertex('4','None',False)
-    vertex3D = Vertex('3', 'None', False)
-    vertexD = Vertex('D','MAX',False)
-    vertexD.setNeighbours([vertex5D,vertex3D])
-
-    vertex2E = Vertex('2','None',False)
-    vertex7E = Vertex('7', 'None', False)
-    vertexE = Vertex('E','MAX',False)
-    vertexE.setNeighbours([vertex2E,vertex7E])
-
-    vertexB = Vertex('B','MIN',False)
-    vertexB.setNeighbours([vertexD,vertexE])
-
-    vertex8F = Vertex('3','None',False)
-    vertex2F = Vertex('2', 'None', False)
-    vertexF = Vertex('F','MAX',False)
-    vertexF.setNeighbours([vertex8F,vertex2F])
-
-    vertex2G = Vertex('2','None',False)
-    vertex8G = Vertex('8','None',False)
-    vertexG = Vertex('G','MAX',False)
-    vertexG.setNeighbours([vertex2G,vertex8G])
-
-    vertexC = Vertex('C','MIN',False)
-    vertexC.setNeighbours([vertexF,vertexG])
-
-    vertexA = Vertex('A','MAX',True)
-    vertexA.setNeighbours([vertexB,vertexC])
-
-    print(alpha_beta(vertexA,0,0,0))
+    runProb3('alphabeta.txt', 'alphabeta_out.txt')
 
 main()
-
-
-
-
-
-
-
