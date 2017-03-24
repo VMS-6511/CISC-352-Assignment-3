@@ -21,10 +21,9 @@ class Vertex:
     def sort(self):
         if(len(self.neighbours)>0):
             if (type(self.neighbours[0].value) is str):
-                if(self.neighbours[0].value.isdigit()):
-                    i = 1
-                else:
+                if not(self.neighbours[0].value.isdigit()):
                     self.neighbours = sorted(self.neighbours)
+                
     
     def __lt__(self, other):
         if isinstance(other, Vertex):
