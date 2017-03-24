@@ -144,6 +144,8 @@ def buildGraph(vSet):
             vertexSet[node2] = Vertex(node2, 'None', False)
             vertexSet[node1].neighbours.append(vertexSet[node2])
     
+    #Alphabetically sorts neighbour set of each vertex
+    #Given neighbours non-numeric
     for keyVal, value in vertexSet.iteritems():
         value.sort()
     
