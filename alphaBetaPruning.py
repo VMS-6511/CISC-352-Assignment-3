@@ -17,6 +17,24 @@ class Vertex:
         else:
             self.goalNode = False
         self.rootNode = rootNodeValue
+        
+    def sort(self):
+        if(len(self.neighbours)>0):
+            if (type(self.neighbours[0].value) is str):
+                if(self.neighbours[0].value.isdigit()):
+                    i = 1
+                else:
+                    self.neighbours = sorted(self.neighbours)
+    
+    def __lt__(self, other):
+        if isinstance(other, Vertex):
+            return self.value < other.value
+        return NotImplemented
+        
+    def __gt__(self, other):
+        if isinstance(other, Vertex):
+            return self.value > other.value
+        return NotImplemented
 
     def getValue(self):
         return self.value
@@ -126,6 +144,9 @@ def buildGraph(vSet):
         else:
             vertexSet[node2] = Vertex(node2, 'None', False)
             vertexSet[node1].neighbours.append(vertexSet[node2])
+    
+    for keyVal, value in vertexSet.iteritems():
+        value.sort()
     
     return rootVertex
 
